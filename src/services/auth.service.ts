@@ -61,7 +61,7 @@ export class AuthService {
     );
   }
 
-  async register(body: IUser) {
+  async register(body: IUser, admin?: IUser) {
     //check for errors in body data
     this.validateRegisterationParams(body);
 
@@ -77,7 +77,8 @@ export class AuthService {
       name,
       email,
       password: hashPassword,
-      role: UserRole.ADMIN,
+      role: admin ? UserRole.USER : UserRole.ADMIN,
+      addedBy: admin && admin._id,
     });
 
     return {
