@@ -23,7 +23,7 @@ class AuthMiddleware {
     return token;
   }
 
-  async auth(req: Request | any, res: Response | any, next: NextFunction) {
+  async auth(req: Request | any, _res: Response | any, next: NextFunction) {
     const token = AuthMiddleware.validate(req);
 
     try {
@@ -43,7 +43,7 @@ class AuthMiddleware {
     }
   }
 
-  async adminAuth(req: Request | any, res: Response | any, next: NextFunction) {
+  async adminAuth(req: Request | any, _res: Response | any, next: NextFunction) {
     const token = AuthMiddleware.validate(req);
 
     try {
