@@ -21,3 +21,8 @@ export interface IBlog {
   content: string;
   author: Schema.Types.ObjectId;
 }
+
+export interface ILogin {
+  email: string;
+  password: string;
+}
