@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import JWT from 'jsonwebtoken';
 
 import config from '../config';
-import { IUser, User, UserRole } from '../models';
+import { ILogin, IUser, User, UserRole } from '../models';
 import { validateLoginParams, validateRegisterParams } from '../validators';
 import { errorResponse } from '../handlers';
 
@@ -28,6 +28,32 @@ export class AuthService {
     if (isEmail) {
       return errorResponse('Email already in use', 400);
     }
+  }
+
+  async register(body: IUser, admin?: IUser) {
+    //check for errors in body data
+    this.validateRegisterationParams(body);
+
+    const { name, email, password } = body;
+
+    // check if email is already in use
+    await this.validateRegisterationEmail(email);
+
+    // hash password
+    const hashPassword = await this.hashPassword(password);
+
+    await User.create({
+      name,
+      email,
+      password: hashPassword,
+      role: admin ? UserRole.USER : UserRole.ADMIN,
+      addedBy: admin && admin._id,
+    });
+
+    return {
+      success: true,
+      message: 'Account successfully created',
+    };
   }
 
   async validateCredentials(email: string, password: string) {
@@ -61,33 +87,7 @@ export class AuthService {
     );
   }
 
-  async register(body: IUser, admin?: IUser) {
-    //check for errors in body data
-    this.validateRegisterationParams(body);
-
-    const { name, email, password } = body;
-
-    // check if email is already in use
-    await this.validateRegisterationEmail(email);
-
-    // hash password
-    const hashPassword = await this.hashPassword(password);
-
-    await User.create({
-      name,
-      email,
-      password: hashPassword,
-      role: admin ? UserRole.USER : UserRole.ADMIN,
-      addedBy: admin && admin._id,
-    });
-
-    return {
-      success: true,
-      message: 'Account successfully created',
-    };
-  }
-
-  async login(body: IUser) {
+  async login(body: ILogin) {
     const { error } = validateLoginParams(body);
     if (error) {
       return errorResponse(error.details[0].message, 400);

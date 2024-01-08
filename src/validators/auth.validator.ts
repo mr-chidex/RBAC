@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-import { IUser } from '../models';
+import { ILogin, IUser } from '../models';
 
 export const validateRegisterParams = (registerParams: IUser) => {
   return Joi.object({
@@ -10,7 +10,7 @@ export const validateRegisterParams = (registerParams: IUser) => {
   }).validate(registerParams);
 };
 
-export const validateLoginParams = (loginParams: IUser) => {
+export const validateLoginParams = (loginParams: ILogin) => {
   return Joi.object({
     email: Joi.string().required().email().normalize(),
     password: Joi.string().trim().required(),
